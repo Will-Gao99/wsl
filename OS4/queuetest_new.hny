@@ -130,7 +130,7 @@ def seqTests():
     assert expected 
     queue.remove(?q_8ones, 1)
     expected = queue.qsize(?q_8ones) == 0
-    assert expected 
+    assert expected
     expected = not queue.contains(?q_8ones, 1)
     assert expected 
     queue.remove(?q_8ones, 1)

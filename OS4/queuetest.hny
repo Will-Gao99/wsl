@@ -10,8 +10,82 @@ def receiver(q):
                 assert v in { None, 1, 2 }
                 done = v == None
 
+def remover(q, v):
+    queue.remove(q, v)
+
+def container(q, v):
+    let res = queue.contains(q, v):
+        assert res in {True, False}
+
 testq = queue.Queue()
 spawn sender(?testq, 1)
 spawn sender(?testq, 2)
 spawn receiver(?testq)
 spawn receiver(?testq)
+spawn remover(?testq, 1)
+
+def tests():
+    val = 0
+    q = queue.Queue()
+    q_empty = queue.Queue()
+    size = 0
+
+    # PUT tests
+    queue.put(?q, 2)
+    size = queue.qsize(?q)
+    assert size == 1
+    assert q->head->value == 2
+    queue.put(?q, 3)
+    size = queue.qsize(?q)
+    assert size == 2
+    assert q->head->value == 2
+    assert q->head->next->value == 3
+
+    # INSERT tests
+    queue.insert(?q, 1)
+    size = queue.qsize(?q)
+    assert size == 3
+    assert q->head->value == 1
+    queue.reset(?q)
+    queue.insert(?q, 1)
+    size = queue.qsize(?q)
+    assert size == 1
+    assert q->head->value == 1
+
+    # GET tests
+    assert queue.get(?q_empty) == None
+    assert queue.get(?q) == 1
+    size = queue.qsize(?q)
+    assert size == 0
+    assert queue.get(?q) == 1
+
+    # CONTAINS tests
+    queue.reset(?q)
+    queue.put(?q, 1)
+    assert queue.contains(?q, 1) == True
+    assert queue.contains(?q, 2) == False
+
+    # REMOVE tests
+    queue.remove(?q, 1)
+    size = queue.qsize(?q)
+    assert size == 0
+    assert q->head == None
+
+    queue.put(?q, 1)
+    queue.put(?q, 1)
+    queue.put(?q, 1)
+    queue.remove(?q, 1)
+    size = queue.qsize(?q)
+    assert size == 0
+    assert q->head == None
+
+    queue.put(?q, 1)
+    queue.put(?q, 2)
+    queue.put(?q, 1)
+    queue.remove(?q, 1)
+    size = queue.qsize(?q)
+    assert size == 1
+    assert q->head == 2
+
+
+tests()
