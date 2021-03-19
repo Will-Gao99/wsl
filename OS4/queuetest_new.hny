@@ -1,0 +1,151 @@
+import queue
+
+def sender(q, v):
+    queue.put(q, v)
+
+def receiver(q):
+    let done = False:
+        while not done:
+            let v = queue.get(q):
+                assert v in { None, 1, 2 }
+                done = v == None
+
+def remover(q, v):
+    queue.remove(q, v)
+    
+def container(q, v):
+    let val = queue.contains(q, v):
+        assert val in {True, False}
+
+testq = queue.Queue()
+spawn sender(?testq, 1)
+spawn sender(?testq, 2)
+spawn sender(?testq, 1)
+spawn sender(?testq, 1)
+spawn receiver(?testq)
+spawn remover(?testq, 1)
+                
+testq1 = queue.Queue()
+
+def seqTests():
+    val = 0
+    q0 = queue.Queue()
+    q1 = queue.Queue()
+    q_8ones = queue.Queue()
+    q_3twos_1one =queue.Queue()
+    # PUT
+    queue.put(?q0, 2)
+    queue.put(?q0, 4)
+    queue.put(?q0, 6)
+    queue.put(?q0, 8)
+    queue.put(?q0, 10)
+    # Size Changes correctly with a put
+    expected = queue.qsize(?q0) == 5
+    assert expected
+
+    # INSERT
+    queue.insert(?q0, 12)
+    queue.insert(?q0, 14)
+    # Start a qeue with an insert
+    queue.insert(?q1, 6)
+    queue.put(?q1, 9)
+    queue.insert(?q1, 3)
+    queue.insert(?q1, 3)
+    queue.put(?q1, 12)
+    queue.put(?q1, 15)
+
+    # Size Changes correctly with an insert
+    expected = queue.qsize(?q0) == 7
+    assert expected
+    expected = queue.qsize(?q1) == 6
+    assert expected
+
+
+    # GET AND CONTAINS
+    val = queue.get(?q1)
+    expected = queue.contains(?q1, 3)
+    assert expected
+    expected = val ==  3
+    assert expected
+    expected = queue.qsize(?q1) == 5
+    assert expected 
+
+    val = queue.get(?q1)
+    expected = not queue.contains(?q1, 3)
+    assert expected 
+    expected = val ==  3
+    assert expected 
+    expected = queue.qsize(?q1) == 4
+    assert expected 
+
+    val = queue.get(?q1)
+    expected = val ==  6
+    assert expected 
+    expected = not queue.contains(?q1, val)
+    assert expected 
+    expected = queue.qsize(?q1) == 3
+    assert expected 
+
+    val = queue.get(?q1)
+    expected = val ==  9
+    assert expected 
+    expected = not queue.contains(?q1, val)
+    assert expected 
+    expected = queue.qsize(?q1) == 2
+    assert expected 
+
+    val = queue.get(?q1)
+    expected = val ==  12
+    assert expected 
+    expected = not queue.contains(?q1, val)
+    assert expected 
+    expected = queue.qsize(?q1) == 1
+    assert expected 
+
+    val = queue.get(?q1)
+    expected = val ==  15
+    assert expected 
+    expected = not queue.contains(?q1, val)
+    assert expected 
+    expected = queue.qsize(?q1) == 0
+    assert expected 
+
+    # REMOVE
+    # make special queues
+    queue.put(?q_8ones, 1)
+    queue.put(?q_8ones, 1)
+    queue.insert(?q_8ones, 1)
+    queue.put(?q_8ones, 1)
+    queue.insert(?q_8ones, 1)
+    queue.put(?q_8ones, 1)
+    queue.put(?q_8ones, 1)
+    queue.put(?q_8ones, 1)
+
+    queue.insert(?q_3twos_1one, 1)
+    queue.insert(?q_3twos_1one, 2)
+    queue.insert(?q_3twos_1one, 2)
+    queue.insert(?q_3twos_1one, 2)
+
+    expected = queue.qsize(?q_8ones) == 8
+    assert expected 
+    queue.remove(?q_8ones, 1)
+    expected = queue.qsize(?q_8ones) == 0
+    assert expected 
+    expected = not queue.contains(?q_8ones, 1)
+    assert expected 
+    queue.remove(?q_8ones, 1)
+
+    expected = queue.qsize(?q_3twos_1one) == 4
+    assert expected 
+    queue.remove(?q_3twos_1one, 2)
+    expected = queue.qsize(?q_3twos_1one) == 1
+    assert expected 
+    expected = not queue.contains(?q_3twos_1one, 2)
+    assert expected 
+    expected = queue.contains(?q_3twos_1one, 1)
+    assert expected 
+    expected = queue.get(?q_3twos_1one) == 1
+    assert expected 
+
+        
+seqTests()
